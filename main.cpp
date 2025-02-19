@@ -135,8 +135,8 @@ int main() {
 		glUniformMatrix4fv(glGetUniformLocation(waterShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(glGetUniformLocation(waterShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(waterShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
-		glUniform1f(glGetUniformLocation(waterShader.ID, "time"), currentFrame * 2.0f);
-		glUniform1f(glGetUniformLocation(waterShader.ID, "time"), deltaTime*2.0f);
+		glUniform1f(glGetUniformLocation(waterShader.ID, "time"), currentFrame);
+		glUniform1f(glGetUniformLocation(waterShader.ID, "deltaTime"), deltaTime);
 
 		plane.Draw(waterShader);
 
