@@ -33,6 +33,9 @@ bool firstMouseMove = true;
 
 float fov = 45.0f;
 
+const int numberOfWaves = 5;
+float randomValues[numberOfWaves * 5];
+
 void framebuffer_size_callback(GLFWwindow* window, int Twidth, int Theight) {
 	glViewport(0, 0, Twidth, Theight);
 }
@@ -76,6 +79,19 @@ void scroll_callback(GLFWwindow* window, double xOffset, double yOffset) {
 	camera.ProcessMouseScroll(static_cast<float>(yOffset));
 }
 
+void GenerateRandomValues(Shader shader) {
+	srand(glfwGetTime());
+	shader.use();
+	for (int i = 0; i < sizeof(randomValues)/sizeof(*randomValues); i++)
+	{
+		randomValues[i] = (float)(rand() % 1) + (float)rand() / (float)(RAND_MAX);
+
+		/*string uniformName = "randomValues[" + i + ']';
+		glUniform1f(glGetUniformLocation(shader.ID,  uniformName.c_str()), randomValue);*/
+	}
+	glUniform1fv(glGetUniformLocation(shader.ID, "randomValues"), sizeof(randomValues) / sizeof(*randomValues), randomValues);
+}
+
 
 int main() {
 	glfwInit();
@@ -110,6 +126,11 @@ int main() {
 
 	Shader waterShader("D:/projects/Water/SimpleWater/vertexShader.glsl", "D:/projects/Water/SimpleWater/fragmentShader.glsl");
 	Model plane("models/plane/plane.obj");
+	waterShader.use();
+
+
+
+	GenerateRandomValues(waterShader);
 
 	glUniform3fv(glGetUniformLocation(waterShader.ID, "DirLight.direction"), 1, glm::value_ptr(glm::vec3(-0.2f, -1.0f, -0.3f)));
 
