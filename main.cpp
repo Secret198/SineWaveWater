@@ -33,7 +33,7 @@ bool firstMouseMove = true;
 
 float fov = 45.0f;
 
-const int numberOfWaves = 5;
+const int numberOfWaves = 2;
 float randomValues[numberOfWaves * 5];
 
 void framebuffer_size_callback(GLFWwindow* window, int Twidth, int Theight) {
@@ -79,12 +79,17 @@ void scroll_callback(GLFWwindow* window, double xOffset, double yOffset) {
 	camera.ProcessMouseScroll(static_cast<float>(yOffset));
 }
 
+float generateRandomFloat(int a, int b) {
+	return (float)(a + (rand() % (b - a))) + (float)((rand()) / (float)(RAND_MAX));
+}
+
 void GenerateRandomValues(Shader shader) {
 	srand(glfwGetTime());
 	shader.use();
 	for (int i = 0; i < sizeof(randomValues)/sizeof(*randomValues); i++)
 	{
-		randomValues[i] = (float)(rand() % 1) + (float)rand() / (float)(RAND_MAX);
+		//randomValues[i] = (float)(rand() % 5) + (float)rand() / (float)(RAND_MAX);
+		randomValues[i] = generateRandomFloat(5, 10);
 
 		/*string uniformName = "randomValues[" + i + ']';
 		glUniform1f(glGetUniformLocation(shader.ID,  uniformName.c_str()), randomValue);*/

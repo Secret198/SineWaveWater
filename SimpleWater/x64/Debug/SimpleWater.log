@@ -7,6 +7,6 @@ D:\projects\Water\SimpleWater\main.cpp(70,16): warning C4244: 'initializing': co
 D:\projects\Water\SimpleWater\main.cpp(71,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
 D:\projects\Water\SimpleWater\main.cpp(72,15): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 D:\projects\Water\SimpleWater\main.cpp(73,15): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\projects\Water\SimpleWater\main.cpp(83,19): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
-D:\projects\Water\SimpleWater\main.cpp(138,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(87,19): warning C4244: 'argument': conversion from 'double' to 'unsigned int', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(143,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   SimpleWater.vcxproj -> D:\projects\Water\SimpleWater\x64\Debug\SimpleWater.exe
