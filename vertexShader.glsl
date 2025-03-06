@@ -3,7 +3,10 @@ layout(location = 0) in vec3 aPos;
 layout(location = 1) in vec3 normalVector;
 layout(location = 2) in vec2 aTextureCoords;
 
-const int numberOfWaves = 5;
+#define PI 3.1415926535897932384626433832795
+#define G 9.81
+
+const int numberOfWaves = 10;
 
 out vec3 Normal;
 out vec3 FragPos;
@@ -15,7 +18,7 @@ uniform mat4 projection;
 
 uniform float time;
 uniform float deltaTime;
-uniform float randomValues[numberOfWaves * 5];
+uniform float randomValues[numberOfWaves * 3];
 
 float rand(vec2 co)
 {
@@ -24,15 +27,16 @@ float rand(vec2 co)
 
 float GetPhase(float waveLength, int i)
 {
-    return (deltaTime + randomValues[i + 4]) * (2.0 / waveLength);
+    return (deltaTime + sqrt(G * (2.0 * PI / waveLength)));
 };
 
 float[3] GetWave(vec2 position, int i)
 {
-    float amplitude = randomValues[i];
-    float waveLength = randomValues[i + 1];
-    vec2 directionVector = vec2(randomValues[i + 2], randomValues[i + 3]);
+    float waveLength = randomValues[i];
+    vec2 directionVector = vec2(cos(randomValues[i + 1] * (PI / 180.0)), sin(randomValues[i + 1] * (PI / 180.0)));
     float frequency = 2.0 / waveLength;
+
+    float amplitude = randomValues[i + 2];
     float phase = GetPhase(waveLength, i);
 
     float[3] waves;
@@ -52,7 +56,7 @@ void main()
 
     for(int i = 0; i < numberOfWaves; i++)
     {
-        float[3] wavesAndVectors = GetWave(vec2(vertexPosition.x, vertexPosition.z), i);
+        float[3] wavesAndVectors = GetWave(vec2(vertexPosition.x, vertexPosition.z), i * 3);
         waves += wavesAndVectors[0];
         dx.y += wavesAndVectors[1];
         dy.y += wavesAndVectors[2];

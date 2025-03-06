@@ -13,6 +13,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "model.h"
+#include <random>
 
 using namespace std;
 
@@ -33,8 +34,9 @@ bool firstMouseMove = true;
 
 float fov = 45.0f;
 
-const int numberOfWaves = 2;
-float randomValues[numberOfWaves * 5];
+const int numberOfWaves = 10;
+const int paramCount = 3;
+float randomValues[numberOfWaves * paramCount];
 
 void framebuffer_size_callback(GLFWwindow* window, int Twidth, int Theight) {
 	glViewport(0, 0, Twidth, Theight);
@@ -79,20 +81,34 @@ void scroll_callback(GLFWwindow* window, double xOffset, double yOffset) {
 	camera.ProcessMouseScroll(static_cast<float>(yOffset));
 }
 
-float generateRandomFloat(int a, int b) {
-	return (float)(a + (rand() % (b - a))) + (float)((rand()) / (float)(RAND_MAX));
+float generateRandomFloat(float a, float b) {
+	random_device device;
+	mt19937 gen(device());
+	uniform_real_distribution<float> dist(a, b);
+	return dist(gen);
 }
 
 void GenerateRandomValues(Shader shader) {
-	srand(glfwGetTime());
 	shader.use();
-	for (int i = 0; i < sizeof(randomValues)/sizeof(*randomValues); i++)
+	float wavelengthMedian = 5.0f;
+	float wavelengthMax = wavelengthMedian * 1.5f;
+	float wavelengthMin = wavelengthMedian * 0.5f;
+
+	float maxAngle = 90.0f;
+
+	float amplitudeMedian = 0.5f;
+
+
+	for (int i = 0; i < numberOfWaves*paramCount; i+=paramCount)
 	{
 		//randomValues[i] = (float)(rand() % 5) + (float)rand() / (float)(RAND_MAX);
-		randomValues[i] = generateRandomFloat(5, 10);
+		randomValues[i] = generateRandomFloat(wavelengthMin, wavelengthMax);
+		randomValues[i + 1] = generateRandomFloat(0.0f, maxAngle);
+		randomValues[i + 2] = amplitudeMedian / wavelengthMedian * randomValues[i];
 
-		/*string uniformName = "randomValues[" + i + ']';
-		glUniform1f(glGetUniformLocation(shader.ID,  uniformName.c_str()), randomValue);*/
+		cout << randomValues[i] << endl;
+		cout << randomValues[i + 1] << endl;
+		cout << randomValues[i + 2] << endl;
 	}
 	glUniform1fv(glGetUniformLocation(shader.ID, "randomValues"), sizeof(randomValues) / sizeof(*randomValues), randomValues);
 }
