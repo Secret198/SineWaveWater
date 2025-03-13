@@ -29,7 +29,7 @@ float pitch = 0.0f;
 float lastMouseX = width / 2;
 float lastMouseY = height / 2;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+Camera camera(glm::vec3(0.0f, 5.0f, -5.0f));
 bool firstMouseMove = true;
 
 float fov = 45.0f;
@@ -90,13 +90,13 @@ float generateRandomFloat(float a, float b) {
 
 void GenerateRandomValues(Shader shader) {
 	shader.use();
-	float wavelengthMedian = 3.0f;
+	float wavelengthMedian = 2.0f;
 	float wavelengthMax = wavelengthMedian * 1.5f;
 	float wavelengthMin = wavelengthMedian * 0.5f;
 
-	float maxAngle = 90.0f;
+	float maxAngle = 60.0f;
 
-	float amplitudeMedian = 0.2f;
+	float amplitudeMedian = 0.1f;
 
 
 	for (int i = 0; i < numberOfWaves*paramCount; i+=paramCount)
@@ -151,7 +151,8 @@ int main() {
 	GenerateRandomValues(waterShader);
 
 	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.direction"), 1, glm::value_ptr(glm::vec3(-0.2f, -1.0f, -0.3f)));
-	glUniform1f(glGetUniformLocation(waterShader.ID, "lightSource.diffuse"), 0.1f);
+	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.diffusion"), 1, glm::value_ptr(glm::vec3(1.0f, 0.98f, 0.698f)));
+	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.specular"), 1, glm::value_ptr(glm::vec3(1.0f, 0.992f, 0.89f)));
 
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = glfwGetTime();
@@ -177,6 +178,7 @@ int main() {
 		glUniformMatrix4fv(glGetUniformLocation(waterShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glUniform1f(glGetUniformLocation(waterShader.ID, "time"), currentFrame);
 		glUniform1f(glGetUniformLocation(waterShader.ID, "deltaTime"), deltaTime);
+		glUniform3fv(glGetUniformLocation(waterShader.ID, "viewPos"), 1, glm::value_ptr(camera.Position));
 
 		plane.Draw(waterShader);
 
