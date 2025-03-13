@@ -15,7 +15,11 @@ in vec2 TextureCoords;
 
 out vec4 fragColor;
 
+uniform DirLight lightSource;
+
 void main()
 {
-    fragColor = vec4(0.09, 0.17, 0.4, 1.0);
+    vec4 waterColor = vec4(0.09, 0.17, 0.4, 1.0);
+    float diffuse = max(dot(Normal, lightSource.direction), 0.0);
+    fragColor = diffuse * waterColor;
 };

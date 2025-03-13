@@ -34,7 +34,7 @@ bool firstMouseMove = true;
 
 float fov = 45.0f;
 
-const int numberOfWaves = 10;
+const int numberOfWaves = 20;
 const int paramCount = 3;
 float randomValues[numberOfWaves * paramCount];
 
@@ -90,13 +90,13 @@ float generateRandomFloat(float a, float b) {
 
 void GenerateRandomValues(Shader shader) {
 	shader.use();
-	float wavelengthMedian = 5.0f;
+	float wavelengthMedian = 3.0f;
 	float wavelengthMax = wavelengthMedian * 1.5f;
 	float wavelengthMin = wavelengthMedian * 0.5f;
 
 	float maxAngle = 90.0f;
 
-	float amplitudeMedian = 0.5f;
+	float amplitudeMedian = 0.2f;
 
 
 	for (int i = 0; i < numberOfWaves*paramCount; i+=paramCount)
@@ -106,9 +106,6 @@ void GenerateRandomValues(Shader shader) {
 		randomValues[i + 1] = generateRandomFloat(0.0f, maxAngle);
 		randomValues[i + 2] = amplitudeMedian / wavelengthMedian * randomValues[i];
 
-		cout << randomValues[i] << endl;
-		cout << randomValues[i + 1] << endl;
-		cout << randomValues[i + 2] << endl;
 	}
 	glUniform1fv(glGetUniformLocation(shader.ID, "randomValues"), sizeof(randomValues) / sizeof(*randomValues), randomValues);
 }
@@ -153,7 +150,8 @@ int main() {
 
 	GenerateRandomValues(waterShader);
 
-	glUniform3fv(glGetUniformLocation(waterShader.ID, "DirLight.direction"), 1, glm::value_ptr(glm::vec3(-0.2f, -1.0f, -0.3f)));
+	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.direction"), 1, glm::value_ptr(glm::vec3(-0.2f, -1.0f, -0.3f)));
+	glUniform1f(glGetUniformLocation(waterShader.ID, "lightSource.diffuse"), 0.1f);
 
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = glfwGetTime();

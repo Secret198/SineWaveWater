@@ -6,7 +6,7 @@ layout(location = 2) in vec2 aTextureCoords;
 #define PI 3.1415926535897932384626433832795
 #define G 9.81
 
-const int numberOfWaves = 10;
+const int numberOfWaves = 20;
 
 out vec3 Normal;
 out vec3 FragPos;
@@ -68,6 +68,5 @@ void main()
     // vertexPosition.y = rand(vec2(vertexPosition.x, vertexPosition.z)) * sin((dot(vec2(rand(vec2(vertexPosition.x, vertexPosition.z)), rand(vec2(vertexPosition.x, vertexPosition.z))), vec2(vertexPosition.x, vertexPosition.z)) * (2.0 / rand(vec2(vertexPosition.x, vertexPosition.z))) + time * ((deltaTime + rand(vec2(vertexPosition.x, vertexPosition.z))) * (2.0 / 1.0)))) + 0.5 * sin((dot(vec2(rand(vec2(vertexPosition.x, vertexPosition.z)), rand(vec2(vertexPosition.x, vertexPosition.z))), vec2(vertexPosition.x, vertexPosition.z)) * (2.0 / rand(vec2(vertexPosition.x, vertexPosition.z))) + time * ((deltaTime + rand(vec2(vertexPosition.x, vertexPosition.z))) * (2.0 / rand(vec2(vertexPosition.x, vertexPosition.z))))));
     gl_Position = projection * view * vertexPosition;
     FragPos = vec3(vertexPosition);
-    Normal = mat3(transpose(inverse(model))) * normalVector;
     TextureCoords = aTextureCoords;
 };
