@@ -77,6 +77,7 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
 	camera.ProcessMouseMovement(xOffset, yOffset);
 }
 
+
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset) {
 	camera.ProcessMouseScroll(static_cast<float>(yOffset));
 }
