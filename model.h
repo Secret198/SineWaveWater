@@ -12,16 +12,69 @@ public:
 	std::vector<Mesh> meshes;
 	std::string directory;
 
+	GLenum textureType;
+	unsigned int textureId;
+
 	Model(std::string const path) {
 		loadModel(path);
 	}
 
-	void Draw(Shader& shader) {
+	void Draw(Shader& shader, bool customTexture) {
 		for (int i = 0; i < meshes.size(); i++)
 		{
-			meshes[i].Draw(shader);
+			if (!customTexture) {
+				meshes[i].Draw(shader);
+			}
+			else {
+				meshes[i].Draw(shader, textureType, textureId);
+			}
 		}
 	}
+
+	void Draw(Shader& shader, GLenum type, unsigned int texId) {
+		for (int i = 0; i < meshes.size(); i++)
+		{
+			meshes[i].Draw(shader, type, texId);
+		}
+	}
+
+	void loadCubeMap(std::vector<std::string> faces) {
+		unsigned int textureId;
+		glGenTextures(1, &textureId);
+		glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+
+		int width, height, nbrOfChannels;
+		for (unsigned int i = 0; i < faces.size(); i++) {
+			unsigned char* data = stbi_load(faces[i].c_str(), &width, &height, &nbrOfChannels, 0);
+			if (data) {
+				GLenum format;
+				if (nbrOfChannels == 3) {
+					format = GL_RGB;
+				}
+				else if (nbrOfChannels == 4) {
+					format = GL_RGBA;
+				}
+				glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
+				stbi_image_free(data);
+			}
+			else {
+				std::cout << "Failed to load cubemap at path: " << faces[i] << std::endl;
+			}
+
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+		}
+
+		this->textureId = textureId;
+		this->textureType = GL_TEXTURE_CUBE_MAP;
+	}
+
+	
+	
 private:
 
 
@@ -104,10 +157,10 @@ private:
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 			std::vector<Texture> specularMaps = loadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
-
+			
 			textures.insert(textures.end(), specularMaps.begin(), specularMaps.end());
 		}
-
+		
 		return Mesh(vertices, indicies, textures);
 	}
 

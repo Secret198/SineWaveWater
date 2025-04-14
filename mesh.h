@@ -70,6 +70,27 @@ public:
 		glActiveTexture(GL_TEXTURE0);
 	}
 
+	void Draw(Shader& shader, GLenum textureType, unsigned int textureId) {
+		try {
+			if (!textureType || !textureId) {
+				throw (textureId);
+			}
+			glBindTexture(textureType, textureId);
+
+
+			// draw mesh
+			glBindVertexArray(VAO);
+			glDrawElements(GL_TRIANGLES, static_cast<unsigned int>(indices.size()), GL_UNSIGNED_INT, 0);
+			glBindVertexArray(0);
+
+			glActiveTexture(GL_TEXTURE0);
+		}
+		catch (...) {
+			std::cout << "Textureid of texturetype is undefined";
+		}
+		
+	}
+
 
 private:
 	unsigned int VBO, EBO;

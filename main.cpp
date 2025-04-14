@@ -29,7 +29,7 @@ float pitch = 0.0f;
 float lastMouseX = width / 2;
 float lastMouseY = height / 2;
 
-Camera camera(glm::vec3(0.0f, 5.0f, -5.0f));
+Camera camera(glm::vec3(0.0f, 1.0f, -10.0f));
 bool firstMouseMove = true;
 
 float fov = 45.0f;
@@ -37,6 +37,17 @@ float fov = 45.0f;
 const int numberOfWaves = 20;
 const int paramCount = 3;
 float randomValues[numberOfWaves * paramCount];
+
+string skyBoxPath = "D:/projects/Water/SimpleWater/textures/skybox/";
+
+vector<string> skyboxFaces = {
+	skyBoxPath + "right.jpg",
+	skyBoxPath + "left.jpg",
+	skyBoxPath + "bottom.jpg",
+	skyBoxPath + "top.jpg",
+	skyBoxPath + "front.jpg",
+	skyBoxPath + "back.jpg",
+};
 
 void framebuffer_size_callback(GLFWwindow* window, int Twidth, int Theight) {
 	glViewport(0, 0, Twidth, Theight);
@@ -143,17 +154,25 @@ int main() {
 	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
-	Shader waterShader("D:/projects/Water/SimpleWater/vertexShader.glsl", "D:/projects/Water/SimpleWater/fragmentShader.glsl");
+	
+	Shader skyboxShader("D:/projects/Water/SimpleWater/shaders/skyboxVertex.glsl", "D:/projects/Water/SimpleWater/shaders/skyboxFragment.glsl");
+	Shader waterShader("D:/projects/Water/SimpleWater/shaders/vertexShader.glsl", "D:/projects/Water/SimpleWater/shaders/fragmentShader.glsl");
+
+	Model skybox("D:/projects/Water/SimpleWater/models/cube/cube.obj");
 	Model plane("models/plane/plane.obj");
+
 	waterShader.use();
 
-
+	skybox.loadCubeMap(skyboxFaces);
 
 	GenerateRandomValues(waterShader);
 
 	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.direction"), 1, glm::value_ptr(glm::vec3(-0.2f, -1.0f, -0.3f)));
 	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.diffusion"), 1, glm::value_ptr(glm::vec3(1.0f, 0.98f, 0.698f)));
 	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.specular"), 1, glm::value_ptr(glm::vec3(1.0f, 0.992f, 0.89f)));
+
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
 
 	while (!glfwWindowShouldClose(window)) {
 		float currentFrame = glfwGetTime();
@@ -181,7 +200,13 @@ int main() {
 		glUniform1f(glGetUniformLocation(waterShader.ID, "deltaTime"), deltaTime);
 		glUniform3fv(glGetUniformLocation(waterShader.ID, "viewPos"), 1, glm::value_ptr(camera.Position));
 
-		plane.Draw(waterShader);
+		plane.Draw(waterShader, false);
+
+		skyboxShader.use();
+		glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(glm::mat4(glm::mat3(view))));
+		glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+		skybox.Draw(skyboxShader, true);
+
 
 		process_input(window);
 		glfwSwapBuffers(window);
