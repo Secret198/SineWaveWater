@@ -1,3 +1,11 @@
 D:\projects\tests\OpenGlLearn\glad.c;D:\projects\Water\SimpleWater\SimpleWater\x64\Debug\glad.obj
 D:\projects\tests\OpenGlLearn\stb_image.cpp;D:\projects\Water\SimpleWater\SimpleWater\x64\Debug\stb_image.obj
+D:\projects\Water\SimpleWater\imgui\imgui.cpp;D:\projects\Water\SimpleWater\SimpleWater\x64\Debug\imgui.obj
+D:\projects\Water\SimpleWater\imgui\imgui_demo.cpp;D:\projects\Water\SimpleWater\SimpleWater\x64\Debug\imgui_demo.obj
+D:\projects\Water\SimpleWater\imgui\imgui_draw.cpp;D:\projects\Water\SimpleWater\SimpleWater\x64\Debug\imgui_draw.obj
+D:\projects\Water\SimpleWater\imgui\imgui_impl_glfw.cpp;D:\projects\Water\SimpleWater\SimpleWater\x64\Debug\imgui_impl_glfw.obj
+D:\projects\Water\SimpleWater\imgui\imgui_impl_opengl3.cpp;D:\projects\Water\SimpleWater\SimpleWater\x64\Debug\imgui_impl_opengl3.obj
+D:\projects\Water\SimpleWater\imgui\imgui_stdlib.cpp;D:\projects\Water\SimpleWater\SimpleWater\x64\Debug\imgui_stdlib.obj
+D:\projects\Water\SimpleWater\imgui\imgui_tables.cpp;D:\projects\Water\SimpleWater\SimpleWater\x64\Debug\imgui_tables.obj
+D:\projects\Water\SimpleWater\imgui\imgui_widgets.cpp;D:\projects\Water\SimpleWater\SimpleWater\x64\Debug\imgui_widgets.obj
 D:\projects\Water\SimpleWater\main.cpp;D:\projects\Water\SimpleWater\SimpleWater\x64\Debug\main.obj

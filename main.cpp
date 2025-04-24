@@ -14,6 +14,9 @@
 #include <assimp/postprocess.h>
 #include "model.h"
 #include <random>
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
 
 using namespace std;
 
@@ -38,6 +41,10 @@ const int numberOfWaves = 20;
 const int paramCount = 3;
 float randomValues[numberOfWaves * paramCount];
 
+int cursorMode = GLFW_CURSOR_NORMAL;
+bool showWindow = false;
+int editModeState = 0;
+
 string skyBoxPath = "D:/projects/Water/SimpleWater/textures/skybox/";
 
 vector<string> skyboxFaces = {
@@ -49,6 +56,14 @@ vector<string> skyboxFaces = {
 	skyBoxPath + "back.jpg",
 };
 
+float wavelengthMedian = 2.0f;
+float wavelengthMax = wavelengthMedian * 1.5f;
+float wavelengthMin = wavelengthMedian * 0.5f;
+
+float maxAngle = 60.0f;
+
+float amplitudeMedian = 0.1f;
+
 void framebuffer_size_callback(GLFWwindow* window, int Twidth, int Theight) {
 	glViewport(0, 0, Twidth, Theight);
 }
@@ -56,6 +71,8 @@ void framebuffer_size_callback(GLFWwindow* window, int Twidth, int Theight) {
 void process_input(GLFWwindow* window) {
 
 	float camSpeed = 2.5f * deltaTime;
+	int editKeyState = glfwGetKey(window, GLFW_KEY_G);
+	
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 		glfwSetWindowShouldClose(window, true);
 	}
@@ -71,6 +88,17 @@ void process_input(GLFWwindow* window) {
 	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		camera.ProcessKeyboard(RIGHT, deltaTime);
 	}
+	else if (editKeyState == GLFW_PRESS && editKeyState != editModeState) {
+		glfwSetInputMode(window, GLFW_CURSOR, cursorMode);
+		cursorMode = (cursorMode == GLFW_CURSOR_DISABLED) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
+		showWindow = !showWindow;
+		editModeState = editKeyState;
+		
+	}
+	else if (editKeyState == GLFW_RELEASE) {
+		editModeState = editKeyState;
+	}
+	
 }
 
 void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
@@ -80,17 +108,24 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos) {
 		firstMouseMove = false;
 	}
 
-	float xOffset = xPos - lastMouseX;
-	float yOffset = lastMouseY - yPos;
-	lastMouseX = xPos;
-	lastMouseY = yPos;
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddMousePosEvent(xPos, yPos);
+	
+	if (!io.WantCaptureMouse && !showWindow) {
+		float xOffset = xPos - lastMouseX;
+		float yOffset = lastMouseY - yPos;
+		lastMouseX = xPos;
+		lastMouseY = yPos;
 
-	camera.ProcessMouseMovement(xOffset, yOffset);
+		camera.ProcessMouseMovement(xOffset, yOffset);
+	}
+	
 }
 
 
 void scroll_callback(GLFWwindow* window, double xOffset, double yOffset) {
-	camera.ProcessMouseScroll(static_cast<float>(yOffset));
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddMouseWheelEvent(xOffset, yOffset);
 }
 
 float generateRandomFloat(float a, float b) {
@@ -102,14 +137,9 @@ float generateRandomFloat(float a, float b) {
 
 void GenerateRandomValues(Shader shader) {
 	shader.use();
-	float wavelengthMedian = 2.0f;
-	float wavelengthMax = wavelengthMedian * 1.5f;
-	float wavelengthMin = wavelengthMedian * 0.5f;
 
-	float maxAngle = 60.0f;
-
-	float amplitudeMedian = 0.1f;
-
+	wavelengthMin = wavelengthMedian * 0.5;
+	wavelengthMax = wavelengthMedian * 1.5;
 
 	for (int i = 0; i < numberOfWaves*paramCount; i+=paramCount)
 	{
@@ -146,6 +176,19 @@ int main() {
 
 	glViewport(0, 0, width, height);
 
+	IMGUI_CHECKVERSION();
+	ImGui::CreateContext();
+
+	ImGuiIO& io = ImGui::GetIO(); (void)io;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;
+	io.ConfigFlags |= ImGuiConfigFlags_NavEnableSetMousePos;
+
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	
+	ImGui_ImplOpenGL3_Init("#version 330");
+	ImGui::StyleColorsDark();
+
+
 	stbi_set_flip_vertically_on_load(true);
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -175,6 +218,7 @@ int main() {
 	glDepthFunc(GL_LEQUAL);
 
 	while (!glfwWindowShouldClose(window)) {
+
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
@@ -182,6 +226,9 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
 
 		glm::mat4 view = camera.GetViewMatrix();
 
@@ -207,9 +254,25 @@ int main() {
 		glUniformMatrix4fv(glGetUniformLocation(skyboxShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		skybox.Draw(skyboxShader, true);
 
+		if (showWindow) {
+			ImGui::Begin("Edit window");
+			ImGui::SliderFloat("Wave length median", &wavelengthMedian, 0.0f, 100.0f);
+			ImGui::InputFloat("Max angle", &maxAngle);
+			ImGui::InputFloat("Amplitude median", &amplitudeMedian);
+			ImGui::End();
+		}
 
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		
+		glfwPollEvents();
 		process_input(window);
 		glfwSwapBuffers(window);
-		glfwPollEvents();
 	}
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
+	glfwDestroyWindow(window);
+	glfwTerminate();
 }

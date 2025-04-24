@@ -1,11 +1,17 @@
 ﻿  main.cpp
-D:\projects\Water\SimpleWater\main.cpp(29,18): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\projects\Water\SimpleWater\main.cpp(30,18): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
-D:\projects\Water\SimpleWater\main.cpp(78,16): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\projects\Water\SimpleWater\main.cpp(79,16): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\projects\Water\SimpleWater\main.cpp(83,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\projects\Water\SimpleWater\main.cpp(84,16): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-D:\projects\Water\SimpleWater\main.cpp(85,15): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\projects\Water\SimpleWater\main.cpp(86,15): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
-D:\projects\Water\SimpleWater\main.cpp(178,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(32,18): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(33,18): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(105,16): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(106,16): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(111,28): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(111,22): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(114,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(115,17): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(116,16): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(117,16): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(127,33): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(127,24): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(140,35): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(141,35): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
+D:\projects\Water\SimpleWater\main.cpp(221,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
   SimpleWater.vcxproj -> D:\projects\Water\SimpleWater\x64\Debug\SimpleWater.exe
