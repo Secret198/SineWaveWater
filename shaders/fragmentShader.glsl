@@ -16,6 +16,7 @@ out vec4 fragColor;
 
 uniform DirLight lightSource;
 uniform vec3 viewPos;
+uniform samplerCube skyBox;
 
 vec3 calculateDiffuse()
 {
@@ -23,16 +24,18 @@ vec3 calculateDiffuse()
     return diffuse * lightSource.diffusion;
 }
 
-vec3 calculateSpecular()
+vec3 calculateSpecular(vec3 viewDir)
 {
-    vec3 viewDir = normalize(viewPos - FragPos);
-    vec3 reflectDir = reflect(lightSource.direction, Normal);
-    float specular = pow(max(dot(reflectDir, viewDir), 0.0), 2);
+    vec3 halfway = normalize(viewDir + lightSource.direction);
+    float specular = pow(max(dot(halfway, Normal), 0.0), 2);
     return lightSource.specular * specular;
 }
 
 void main()
 {
+    vec3 viewDir = normalize(viewPos - FragPos);
     vec3 waterColor = vec3(0.09, 0.17, 0.4);
-    fragColor = vec4((calculateDiffuse() + calculateSpecular()) * waterColor, 1.0);
+    vec3 reflectDir = reflect(viewDir, Normal);
+    vec3 lightingData = calculateDiffuse() + calculateSpecular(viewDir);
+    fragColor = texture(skyBox, reflectDir) * vec4(waterColor * lightingData, 1.0);
 };

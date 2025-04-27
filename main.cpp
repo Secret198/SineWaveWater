@@ -64,6 +64,10 @@ float maxAngle = 60.0f;
 
 float amplitudeMedian = 0.1f;
 
+glm::vec3 sunDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
+glm::vec3 sunDiffuse = glm::vec3(1.0f, 0.98f, 0.698f);
+glm::vec3 sunSpecular = glm::vec3(1.0f, 0.992f, 0.89f);
+
 void framebuffer_size_callback(GLFWwindow* window, int Twidth, int Theight) {
 	glViewport(0, 0, Twidth, Theight);
 }
@@ -93,6 +97,7 @@ void process_input(GLFWwindow* window) {
 		cursorMode = (cursorMode == GLFW_CURSOR_DISABLED) ? GLFW_CURSOR_NORMAL : GLFW_CURSOR_DISABLED;
 		showWindow = !showWindow;
 		editModeState = editKeyState;
+		firstMouseMove = !showWindow;
 		
 	}
 	else if (editKeyState == GLFW_RELEASE) {
@@ -210,9 +215,9 @@ int main() {
 
 	GenerateRandomValues(waterShader);
 
-	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.direction"), 1, glm::value_ptr(glm::vec3(-0.2f, -1.0f, -0.3f)));
-	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.diffusion"), 1, glm::value_ptr(glm::vec3(1.0f, 0.98f, 0.698f)));
-	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.specular"), 1, glm::value_ptr(glm::vec3(1.0f, 0.992f, 0.89f)));
+	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.direction"), 1, glm::value_ptr(sunDirection));
+	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.diffusion"), 1, glm::value_ptr(sunDiffuse));
+	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.specular"), 1, glm::value_ptr(sunSpecular));
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
@@ -256,11 +261,29 @@ int main() {
 
 		if (showWindow) {
 			ImGui::Begin("Edit window");
-			ImGui::SliderFloat("Wave length median", &wavelengthMedian, 0.0f, 100.0f);
-			ImGui::InputFloat("Max angle", &maxAngle);
-			ImGui::InputFloat("Amplitude median", &amplitudeMedian);
+			ImGui::Text("Wave settings");
+			ImGui::SliderFloat("Wave length median", &wavelengthMedian, 0.0f, 10.0f);
+			ImGui::SliderFloat("Max angle", &maxAngle, 0.0f, 90.0f);
+			ImGui::SliderFloat("Amplitude median", &amplitudeMedian, 0.0f, 1.0f);
+			if (ImGui::Button("Apply")) {
+				GenerateRandomValues(waterShader);
+			}
+			ImGui::Separator();
+			ImGui::Text("Light settings");
+			ImGui::Text("Sun direction");
+			ImGui::PushItemWidth(100.0f);
+			ImGui::SliderFloat("X", &sunDirection.x, -1.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::SliderFloat("Y", &sunDirection.y, -1.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::SliderFloat("Z", &sunDirection.z, -1.0f, 1.0f);
 			ImGui::End();
 		}
+
+		//idk about this
+		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.direction"), 1, glm::value_ptr(sunDirection));
+		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.diffusion"), 1, glm::value_ptr(sunDiffuse));
+		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.specular"), 1, glm::value_ptr(sunSpecular));
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
