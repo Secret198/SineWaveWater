@@ -20,8 +20,8 @@
 
 using namespace std;
 
-int width = 800;
-int height = 600;
+int width = 1280;
+int height = 720;
 
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
@@ -32,7 +32,7 @@ float pitch = 0.0f;
 float lastMouseX = width / 2;
 float lastMouseY = height / 2;
 
-Camera camera(glm::vec3(0.0f, 1.0f, -10.0f));
+Camera camera(glm::vec3(0.0f, 5.0f, -10.0f));
 bool firstMouseMove = true;
 
 float fov = 45.0f;
@@ -67,6 +67,7 @@ float amplitudeMedian = 0.1f;
 glm::vec3 sunDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
 glm::vec3 sunDiffuse = glm::vec3(1.0f, 0.98f, 0.698f);
 glm::vec3 sunSpecular = glm::vec3(1.0f, 0.992f, 0.89f);
+glm::vec3 waterColor = glm::vec3(0.09f, 0.17f, 0.4f);
 
 void framebuffer_size_callback(GLFWwindow* window, int Twidth, int Theight) {
 	glViewport(0, 0, Twidth, Theight);
@@ -254,6 +255,9 @@ int main() {
 		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.diffusion"), 1, glm::value_ptr(sunDiffuse));
 		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.specular"), 1, glm::value_ptr(sunSpecular));
 
+		//Set water color
+		glUniform3fv(glGetUniformLocation(waterShader.ID, "waterColor"), 1, glm::value_ptr(waterColor));
+
 		plane.Draw(waterShader, false);
 
 		skyboxShader.use();
@@ -279,6 +283,27 @@ int main() {
 			ImGui::SliderFloat("Y", &sunDirection.y, -1.0f, 1.0f);
 			ImGui::SameLine();
 			ImGui::SliderFloat("Z", &sunDirection.z, -1.0f, 1.0f);
+
+			ImGui::Text("Sun diffuse");
+			ImGui::SliderFloat("R##1", &sunDiffuse.x, -1.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::SliderFloat("G##1", &sunDiffuse.y, -1.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::SliderFloat("B##1", &sunDiffuse.z, -1.0f, 1.0f);
+
+			ImGui::Text("Sun specular");
+			ImGui::SliderFloat("R##2", &sunSpecular.x, -1.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::SliderFloat("G##2", &sunSpecular.y, -1.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::SliderFloat("B##2", &sunSpecular.z, -1.0f, 1.0f);
+
+			ImGui::Text("Water color");
+			ImGui::SliderFloat("R##3", &waterColor.x, 0.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::SliderFloat("G##3", &waterColor.y, 0.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::SliderFloat("B##3", &waterColor.z, 0.0f, 1.0f);
 			ImGui::End();
 		}
 

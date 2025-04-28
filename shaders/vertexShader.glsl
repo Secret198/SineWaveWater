@@ -39,10 +39,15 @@ float[3] GetWave(vec2 position, int i)
     float amplitude = randomValues[i + 2];
     float phase = GetPhase(waveLength, i);
 
+    float x = dot(directionVector, position);
+
     float[3] waves;
-    waves[0] = amplitude * sin(dot(directionVector, position) * frequency + time * phase);
-    waves[1] = frequency * directionVector.x * amplitude * cos(dot(directionVector, position) * frequency + time * phase);
-    waves[2] = frequency * directionVector.y * amplitude * cos(dot(directionVector, position) * frequency + time * phase);
+    // waves[0] = amplitude * sin(dot(directionVector, position) * frequency + time * phase);
+    // waves[1] = frequency * directionVector.x * amplitude * cos(dot(directionVector, position) * frequency + time * phase);
+    // waves[2] = frequency * directionVector.y * amplitude * cos(dot(directionVector, position) * frequency + time * phase);
+    waves[0] = amplitude * exp((sin(dot(directionVector, position) * frequency + time * phase)) - 1.0);
+    waves[1] = frequency * directionVector.x * amplitude * exp(sin(x * frequency + time * phase) - 1.0) * cos(x * frequency + time * phase);
+    waves[2] = frequency * directionVector.y * amplitude * exp(sin(x * frequency + time * phase) - 1.0) * cos(x * frequency + time * phase);
     return waves;
 };
 
