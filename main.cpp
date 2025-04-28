@@ -215,10 +215,6 @@ int main() {
 
 	GenerateRandomValues(waterShader);
 
-	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.direction"), 1, glm::value_ptr(sunDirection));
-	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.diffusion"), 1, glm::value_ptr(sunDiffuse));
-	glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.specular"), 1, glm::value_ptr(sunSpecular));
-
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LEQUAL);
 
@@ -245,12 +241,18 @@ int main() {
 		model = glm::translate(model, glm::vec3(0.0f, -0.5f, -1.9f));
 
 		waterShader.use();
+		//Set times and model view projection matricies
 		glUniformMatrix4fv(glGetUniformLocation(waterShader.ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(glGetUniformLocation(waterShader.ID, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 		glUniformMatrix4fv(glGetUniformLocation(waterShader.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 		glUniform1f(glGetUniformLocation(waterShader.ID, "time"), currentFrame);
 		glUniform1f(glGetUniformLocation(waterShader.ID, "deltaTime"), deltaTime);
 		glUniform3fv(glGetUniformLocation(waterShader.ID, "viewPos"), 1, glm::value_ptr(camera.Position));
+
+		//Set sun properties
+		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.direction"), 1, glm::value_ptr(sunDirection));
+		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.diffusion"), 1, glm::value_ptr(sunDiffuse));
+		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.specular"), 1, glm::value_ptr(sunSpecular));
 
 		plane.Draw(waterShader, false);
 
@@ -279,11 +281,6 @@ int main() {
 			ImGui::SliderFloat("Z", &sunDirection.z, -1.0f, 1.0f);
 			ImGui::End();
 		}
-
-		//idk about this
-		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.direction"), 1, glm::value_ptr(sunDirection));
-		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.diffusion"), 1, glm::value_ptr(sunDiffuse));
-		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.specular"), 1, glm::value_ptr(sunSpecular));
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
