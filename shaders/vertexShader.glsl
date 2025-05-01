@@ -6,7 +6,7 @@ layout(location = 2) in vec2 aTextureCoords;
 #define PI 3.1415926535897932384626433832795
 #define G 9.81
 
-const int numberOfWaves = 20;
+const int numberOfWaves = 64;
 
 out vec3 Normal;
 out vec3 FragPos;
@@ -19,6 +19,8 @@ uniform mat4 projection;
 uniform float time;
 uniform float deltaTime;
 uniform float randomValues[numberOfWaves * 3];
+uniform float ampMultiplier;
+uniform float freqMultiplier;
 
 float rand(vec2 co)
 {
@@ -30,7 +32,7 @@ float GetPhase(float waveLength, int i)
     return (deltaTime + sqrt(G * (2.0 * PI / waveLength)));
 };
 
-float[3] GetWave(vec2 position, int i)
+float[3] GetWave(vec2 position, int i, float prevDx)
 {
     float waveLength = randomValues[i];
     vec2 directionVector = vec2(cos(randomValues[i + 1] * (PI / 180.0)), sin(randomValues[i + 1] * (PI / 180.0)));
@@ -45,9 +47,9 @@ float[3] GetWave(vec2 position, int i)
     // waves[0] = amplitude * sin(dot(directionVector, position) * frequency + time * phase);
     // waves[1] = frequency * directionVector.x * amplitude * cos(dot(directionVector, position) * frequency + time * phase);
     // waves[2] = frequency * directionVector.y * amplitude * cos(dot(directionVector, position) * frequency + time * phase);
-    waves[0] = amplitude * exp((sin(dot(directionVector, position) * frequency + time * phase)) - 1.0);
-    waves[1] = frequency * directionVector.x * amplitude * exp(sin(x * frequency + time * phase) - 1.0) * cos(x * frequency + time * phase);
-    waves[2] = frequency * directionVector.y * amplitude * exp(sin(x * frequency + time * phase) - 1.0) * cos(x * frequency + time * phase);
+    waves[0] = amplitude * ampMultiplier * exp((sin(dot(directionVector, position) * frequency * freqMultiplier + time * phase)) - 1.0);
+    waves[1] = frequency * ampMultiplier * directionVector.x * amplitude * exp(sin((x + prevDx) * frequency * freqMultiplier + time * phase) - 1.0) * cos(x * frequency + time * phase);
+    waves[2] = frequency * ampMultiplier * directionVector.y * amplitude * exp(sin(x * frequency * freqMultiplier + time * phase) - 1.0) * cos(x * frequency + time * phase);
     return waves;
 };
 
@@ -58,13 +60,15 @@ void main()
     float waves = 0;
     vec3 dx = vec3(1.0, 0, 0);
     vec3 dy = vec3(0, 0, 1.0);
+    float prevDx = 0;
 
     for(int i = 0; i < numberOfWaves; i++)
     {
-        float[3] wavesAndVectors = GetWave(vec2(vertexPosition.x, vertexPosition.z), i * 3);
+        float[3] wavesAndVectors = GetWave(vec2(vertexPosition.x, vertexPosition.z), i * 3, prevDx);
         waves += wavesAndVectors[0];
         dx.y += wavesAndVectors[1];
         dy.y += wavesAndVectors[2];
+        prevDx = wavesAndVectors[1];
     }
     Normal = cross(dx, dy);
 

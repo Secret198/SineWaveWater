@@ -6,6 +6,7 @@ struct DirLight
 
     vec3 diffusion;
     vec3 specular;
+    vec3 ambient;
 };
 
 in vec3 Normal;
@@ -25,10 +26,18 @@ vec3 calculateDiffuse()
     return diffuse * lightSource.diffusion;
 }
 
+float calculateFresnel(vec3 viewDir)
+{
+    float R0 = pow(-1.33 / 2.33, 2);
+    return R0 + (1 - R0) * pow(1 - dot(viewDir, Normal), 5);
+}
+
 vec3 calculateSpecular(vec3 viewDir)
 {
     vec3 halfway = normalize(viewDir + lightSource.direction);
-    float specular = pow(max(dot(halfway, Normal), 0.0), 2);
+    float fresnel = calculateFresnel(viewDir);
+
+    float specular = pow(max(dot(halfway, Normal), 0.0), 16.0) * fresnel;
     return lightSource.specular * specular;
 }
 
@@ -36,6 +45,9 @@ void main()
 {
     vec3 viewDir = normalize(viewPos - FragPos);
     vec3 reflectDir = reflect(viewDir, Normal);
-    vec3 lightingData = calculateDiffuse() + calculateSpecular(viewDir);
+
+    vec3 lightingData = lightSource.ambient + calculateDiffuse() + calculateSpecular(viewDir);
+
     fragColor = texture(skyBox, reflectDir) * vec4(waterColor * lightingData, 1.0);
+    // fragColor = vec4(waterColor * lightingData, 1.0);
 };

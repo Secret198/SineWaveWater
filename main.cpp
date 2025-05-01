@@ -37,7 +37,7 @@ bool firstMouseMove = true;
 
 float fov = 45.0f;
 
-const int numberOfWaves = 20;
+const int numberOfWaves = 64;
 const int paramCount = 3;
 float randomValues[numberOfWaves * paramCount];
 
@@ -61,13 +61,15 @@ float wavelengthMax = wavelengthMedian * 1.5f;
 float wavelengthMin = wavelengthMedian * 0.5f;
 
 float maxAngle = 60.0f;
-
 float amplitudeMedian = 0.1f;
+float ampMultiplier = 0.82f;
+float freqMultiplier = 1.82f;
 
-glm::vec3 sunDirection = glm::vec3(-0.2f, -1.0f, -0.3f);
+glm::vec3 sunDirection = glm::vec3(0.0f, -0.5f, 0.0f);
 glm::vec3 sunDiffuse = glm::vec3(1.0f, 0.98f, 0.698f);
 glm::vec3 sunSpecular = glm::vec3(1.0f, 0.992f, 0.89f);
 glm::vec3 waterColor = glm::vec3(0.09f, 0.17f, 0.4f);
+glm::vec3 sunAmbient = glm::vec3(0.8235f, 0.8235f, 1.0f);
 
 void framebuffer_size_callback(GLFWwindow* window, int Twidth, int Theight) {
 	glViewport(0, 0, Twidth, Theight);
@@ -92,6 +94,12 @@ void process_input(GLFWwindow* window) {
 	}
 	else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		camera.ProcessKeyboard(RIGHT, deltaTime);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
+		camera.ProcessKeyboard(UP, deltaTime);
+	}
+	else if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS) {
+		camera.ProcessKeyboard(DOWN, deltaTime);
 	}
 	else if (editKeyState == GLFW_PRESS && editKeyState != editModeState) {
 		glfwSetInputMode(window, GLFW_CURSOR, cursorMode);
@@ -156,6 +164,8 @@ void GenerateRandomValues(Shader shader) {
 
 	}
 	glUniform1fv(glGetUniformLocation(shader.ID, "randomValues"), sizeof(randomValues) / sizeof(*randomValues), randomValues);
+	glUniform1f(glGetUniformLocation(shader.ID, "ampMultiplier"), ampMultiplier);
+	glUniform1f(glGetUniformLocation(shader.ID, "freqMultiplier"), freqMultiplier);
 }
 
 
@@ -208,7 +218,7 @@ int main() {
 	Shader waterShader("D:/projects/Water/SimpleWater/shaders/vertexShader.glsl", "D:/projects/Water/SimpleWater/shaders/fragmentShader.glsl");
 
 	Model skybox("D:/projects/Water/SimpleWater/models/cube/cube.obj");
-	Model plane("models/plane/plane.obj");
+	Model plane("models/plane/higherResPlane.obj");
 
 	waterShader.use();
 
@@ -225,6 +235,7 @@ int main() {
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
 
+
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -235,11 +246,11 @@ int main() {
 		glm::mat4 view = camera.GetViewMatrix();
 
 		glm::mat4 projection;
-		projection = glm::perspective(camera.Zoom, (float)width / (float)height, 0.1f, 100.0f);
+		projection = glm::perspective(camera.Zoom, (float)width / (float)height, 0.1f, 1000.0f);
 
 		glm::mat4 model = glm::mat4(1.0f);
-		model = glm::scale(model, glm::vec3(10.0f, 10.f, 10.0f));
-		model = glm::translate(model, glm::vec3(0.0f, -0.5f, -1.9f));
+		model = glm::scale(model, glm::vec3(40.0f, 40.f, 40.0f));
+		//model = glm::translate(model, glm::vec3(0.0f, -0.5f, -1.9f));
 
 		waterShader.use();
 		//Set times and model view projection matricies
@@ -254,6 +265,7 @@ int main() {
 		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.direction"), 1, glm::value_ptr(sunDirection));
 		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.diffusion"), 1, glm::value_ptr(sunDiffuse));
 		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.specular"), 1, glm::value_ptr(sunSpecular));
+		glUniform3fv(glGetUniformLocation(waterShader.ID, "lightSource.ambient"), 1, glm::value_ptr(sunAmbient));
 
 		//Set water color
 		glUniform3fv(glGetUniformLocation(waterShader.ID, "waterColor"), 1, glm::value_ptr(waterColor));
@@ -269,8 +281,10 @@ int main() {
 			ImGui::Begin("Edit window");
 			ImGui::Text("Wave settings");
 			ImGui::SliderFloat("Wave length median", &wavelengthMedian, 0.0f, 10.0f);
-			ImGui::SliderFloat("Max angle", &maxAngle, 0.0f, 90.0f);
+			ImGui::SliderFloat("Max angle", &maxAngle, 0.0f, 180.0f);
 			ImGui::SliderFloat("Amplitude median", &amplitudeMedian, 0.0f, 1.0f);
+			ImGui::SliderFloat("Amplitude multiplier", &ampMultiplier, 0.0f, 1.0f);
+			ImGui::SliderFloat("Frequency multiplier", &freqMultiplier, 1.0f, 5.0f);
 			if (ImGui::Button("Apply")) {
 				GenerateRandomValues(waterShader);
 			}
@@ -283,6 +297,13 @@ int main() {
 			ImGui::SliderFloat("Y", &sunDirection.y, -1.0f, 1.0f);
 			ImGui::SameLine();
 			ImGui::SliderFloat("Z", &sunDirection.z, -1.0f, 1.0f);
+
+			ImGui::Text("Sun Ambient");
+			ImGui::SliderFloat("R##4", &sunAmbient.x, -1.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::SliderFloat("G##4", &sunAmbient.y, -1.0f, 1.0f);
+			ImGui::SameLine();
+			ImGui::SliderFloat("B##4", &sunAmbient.z, -1.0f, 1.0f);
 
 			ImGui::Text("Sun diffuse");
 			ImGui::SliderFloat("R##1", &sunDiffuse.x, -1.0f, 1.0f);
@@ -298,6 +319,8 @@ int main() {
 			ImGui::SameLine();
 			ImGui::SliderFloat("B##2", &sunSpecular.z, -1.0f, 1.0f);
 
+			ImGui::Separator();
+
 			ImGui::Text("Water color");
 			ImGui::SliderFloat("R##3", &waterColor.x, 0.0f, 1.0f);
 			ImGui::SameLine();
@@ -305,6 +328,8 @@ int main() {
 			ImGui::SameLine();
 			ImGui::SliderFloat("B##3", &waterColor.z, 0.0f, 1.0f);
 			ImGui::End();
+
+			
 		}
 
 		ImGui::Render();
