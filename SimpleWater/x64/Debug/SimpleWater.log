@@ -1,4 +1,13 @@
-﻿  main.cpp
+﻿  glad.c
+  imgui.cpp
+  imgui_demo.cpp
+  imgui_draw.cpp
+  imgui_impl_glfw.cpp
+  imgui_impl_opengl3.cpp
+  imgui_stdlib.cpp
+  imgui_tables.cpp
+  imgui_widgets.cpp
+  main.cpp
 D:\projects\Water\SimpleWater\main.cpp(32,18): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
 D:\projects\Water\SimpleWater\main.cpp(33,18): warning C4244: 'initializing': conversion from 'int' to 'float', possible loss of data
 D:\projects\Water\SimpleWater\main.cpp(120,16): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
@@ -14,4 +23,6 @@ D:\projects\Water\SimpleWater\main.cpp(142,24): warning C4244: 'argument': conve
 D:\projects\Water\SimpleWater\main.cpp(155,35): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 D:\projects\Water\SimpleWater\main.cpp(156,35): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
 D:\projects\Water\SimpleWater\main.cpp(234,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  stb_image.cpp
+  Generating Code...
   SimpleWater.vcxproj -> D:\projects\Water\SimpleWater\x64\Debug\SimpleWater.exe
