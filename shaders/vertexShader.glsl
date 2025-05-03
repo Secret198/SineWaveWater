@@ -6,7 +6,7 @@ layout(location = 2) in vec2 aTextureCoords;
 #define PI 3.1415926535897932384626433832795
 #define G 9.81
 
-const int numberOfWaves = 64;
+const int numberOfWaves = 16;
 
 out vec3 Normal;
 out vec3 FragPos;
@@ -47,9 +47,11 @@ float[3] GetWave(vec2 position, int i, float prevDx)
     // waves[0] = amplitude * sin(dot(directionVector, position) * frequency + time * phase);
     // waves[1] = frequency * directionVector.x * amplitude * cos(dot(directionVector, position) * frequency + time * phase);
     // waves[2] = frequency * directionVector.y * amplitude * cos(dot(directionVector, position) * frequency + time * phase);
-    waves[0] = amplitude * ampMultiplier * exp((sin(dot(directionVector, position) * frequency * freqMultiplier + time * phase)) - 1.0);
-    waves[1] = frequency * ampMultiplier * directionVector.x * amplitude * exp(sin((x + prevDx) * frequency * freqMultiplier + time * phase) - 1.0) * cos(x * frequency + time * phase);
-    waves[2] = frequency * ampMultiplier * directionVector.y * amplitude * exp(sin(x * frequency * freqMultiplier + time * phase) - 1.0) * cos(x * frequency + time * phase);
+
+    waves[0] = amplitude * pow(ampMultiplier, i) * exp((sin((x + prevDx) * frequency * pow(freqMultiplier, i) + time * phase)) - 1.0);
+    waves[1] = frequency * pow(ampMultiplier, i) * directionVector.x * amplitude * exp(sin(x * frequency * pow(freqMultiplier, i) + time * phase) - 1.0) * cos(x * frequency + time * phase);
+    waves[2] = frequency * pow(ampMultiplier, i) * directionVector.y * amplitude * exp(sin(x * frequency * pow(freqMultiplier, i) + time * phase) - 1.0) * cos(x * frequency + time * phase);
+
     return waves;
 };
 

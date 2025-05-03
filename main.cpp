@@ -37,7 +37,7 @@ bool firstMouseMove = true;
 
 float fov = 45.0f;
 
-const int numberOfWaves = 64;
+const int numberOfWaves = 16;
 const int paramCount = 3;
 float randomValues[numberOfWaves * paramCount];
 

@@ -28,7 +28,7 @@ vec3 calculateDiffuse()
 
 float calculateFresnel(vec3 viewDir)
 {
-    float R0 = pow(-1.33 / 2.33, 2);
+    float R0 = pow(0.33 / 2.33, 2);
     return R0 + (1 - R0) * pow(1 - dot(viewDir, Normal), 5);
 }
 
@@ -37,8 +37,8 @@ vec3 calculateSpecular(vec3 viewDir)
     vec3 halfway = normalize(viewDir + lightSource.direction);
     float fresnel = calculateFresnel(viewDir);
 
-    float specular = pow(max(dot(halfway, Normal), 0.0), 16.0) * fresnel;
-    return lightSource.specular * specular;
+    float specular = pow(max(dot(halfway, Normal), 0.0), 64.0) * fresnel;
+    return lightSource.specular * specular * 5.0;
 }
 
 void main()
