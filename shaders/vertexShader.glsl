@@ -22,11 +22,6 @@ uniform float randomValues[numberOfWaves * 3];
 uniform float ampMultiplier;
 uniform float freqMultiplier;
 
-float rand(vec2 co)
-{
-    return fract(sin(dot(co, vec2(12.9898, 78.233))) * 43758.5453);
-}
-
 float GetPhase(float waveLength, int i)
 {
     return (deltaTime + sqrt(G * (2.0 * PI / waveLength)));
